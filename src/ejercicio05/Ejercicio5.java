@@ -6,12 +6,13 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 
 public class Ejercicio5 {
 	public static void main(String[] args) {
-
+		getInfoDB("sqlite");
 	}
 
 	/**
@@ -34,27 +35,30 @@ public class Ejercicio5 {
 			fis = new FileInputStream("propiedades.properties");
 			switch (database) {
 			case "oracle":
-				Class.forName(propiedades.getProperty("driver-" + database));
-				conexion = DriverManager.getConnection(propiedades.getProperty("conexion-" + database));
+				Class.forName(propiedades.getProperty("driver-oracle"));
+				conexion = DriverManager.getConnection(propiedades.getProperty("conexion-oracle"));
 				break;
 			case "mysql":
-				Class.forName(propiedades.getProperty("driver-" + database));
-				conexion = DriverManager.getConnection(propiedades.getProperty("conexion-" + database),
-						propiedades.getProperty("usuario-" + database), "");
+				Class.forName(propiedades.getProperty("driver-mysql"));
+				conexion = DriverManager.getConnection(propiedades.getProperty("conexion-mysql"),
+						propiedades.getProperty("usuario-mysql"), "");
 				break;
 			case "sqlite":
-				Class.forName(propiedades.getProperty("driver-" + database));
-				conexion = DriverManager.getConnection(propiedades.getProperty("conexion-" + database));
+				Class.forName(propiedades.getProperty("driver-sqlite"));
+				conexion = DriverManager.getConnection(propiedades.getProperty("conexion-sqlite"));
 				break;
 			default:
 				System.out.println("No se puede establecer la conexión a la base de datos");
 				break;
 			}
 		} catch (FileNotFoundException e) {
+			System.out.println("Archivo propiedades no encontrado");
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
+			System.out.println("clase no encontrada");
 			e.printStackTrace();
 		} catch (SQLException e) {
+			System.out.println("error sql");
 			e.printStackTrace();
 		} finally {
 			try {
@@ -65,11 +69,22 @@ public class Ejercicio5 {
 		}
 		return conexion;
 	}
-	
+
 	public static void getInfoDB(String baseDatos) {
-		Connection conexion=getConnection("baseDatos");
+		Connection conexion = getConnection(baseDatos);
 		try {
-			DatabaseMetaData dbmd=conexion.getMetaData();
+			DatabaseMetaData dbmd = conexion.getMetaData();
+			ResultSet rs = null;
+			String nombre = dbmd.getDatabaseProductName();
+			String driver = dbmd.getDriverName();
+			String url = dbmd.getURL();
+			String usuario = dbmd.getUserName();
+
+			System.out.println("INFORMACION DE LA BASE DE DATOS");
+			System.out.println("================================");
+			System.out.println("Nombre : " + nombre);
+			System.out.println("Drriver : " + driver);
+			System.out.println("URL : " + url);
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
